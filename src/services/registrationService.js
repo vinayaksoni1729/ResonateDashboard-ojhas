@@ -27,7 +27,8 @@ export async function getRegistrations() {
         leaderEmail: data.leaderEmail,
         paymentProofUrl: data.paymentProofUrl,
         submittedAt: data.submittedAt,
-        approvalStatus: data.approvalStatus ?? "pending"
+        status: data.status ?? data.approvalStatus ?? "pending",
+        approvalStatus: data.approvalStatus
       };
     });
   } catch (error) {
@@ -58,7 +59,7 @@ export async function testFirestoreConnection() {
   }
 }
 
-export async function updateApprovalStatus(id, status) {
+export async function updateRegistrationStatus(id, status) {
   if (!auth.currentUser) {
     throw new Error("Not authenticated");
   }
@@ -79,48 +80,23 @@ export async function updateApprovalStatus(id, status) {
   }
 
   const beforeData = beforeSnapshot.data();
-  const teamName = beforeData.teamName ?? "Unknown Team";
-  const oldStatus = beforeData.approvalStatus ?? "pending";
+  const hasTeamName = Object.prototype.hasOwnProperty.call(beforeData, "teamName");
+  const hasMembers = Object.prototype.hasOwnProperty.call(beforeData, "members");
+  const hasPaymentProofUrl = Object.prototype.hasOwnProperty.call(
+    beforeData,
+    "paymentProofUrl"
+  );
+
+  if (!hasTeamName || !hasMembers || !hasPaymentProofUrl) {
+    throw new Error("Missing required fields. Update aborted.");
+  }
 
   await updateDoc(registrationRef, {
-    approvalStatus: status,
+    status,
     reviewedAt: serverTimestamp()
   });
 
-  const afterSnapshot = await getDoc(registrationRef);
-  const afterData = afterSnapshot.data();
-  const hasTeamName = Object.prototype.hasOwnProperty.call(afterData, "teamName");
-  const hasMembers =
-    Object.prototype.hasOwnProperty.call(afterData, "members") ||
-    Object.prototype.hasOwnProperty.call(afterData, "numberOfMembers");
-  const hasPaymentProofUrl = Object.prototype.hasOwnProperty.call(
-    afterData,
-    "paymentProofUrl"
-  );
-  const statusUpdated = afterData.approvalStatus === status;
-
-  const allOriginalFieldsStillExist = Object.keys(beforeData).every(
-    (key) => Object.prototype.hasOwnProperty.call(afterData, key)
-  );
-
-  if (!allOriginalFieldsStillExist) {
-    throw new Error("Post-update verification failed: original fields missing");
-  }
-
-  if (!statusUpdated) {
-    console.error("approvalStatus update verification failed");
-  }
-
-  if (!hasTeamName || !hasMembers || !hasPaymentProofUrl) {
-    console.error("Missing required fields after update");
-  } else if (statusUpdated) {
-    console.log("Update safe");
-    console.log(
-      `${teamName} changed from ${oldStatus} to ${status} at ${new Date().toISOString()}`
-    );
-  }
-
-  console.log("Safe update confirmed");
+  console.log("Status updated safely");
 }
 
 export async function testApprovalUpdate() {
@@ -134,7 +110,7 @@ export async function testApprovalUpdate() {
   const firstDoc = snapshot.docs[0];
   const originalKeys = Object.keys(firstDoc.data());
 
-  await updateApprovalStatus(firstDoc.id, "pending");
+  await updateRegistrationStatus(firstDoc.id, "pending");
 
   const updatedSnapshot = await getDoc(doc(db, "registrations", firstDoc.id));
 

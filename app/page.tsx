@@ -6,7 +6,7 @@ import type { User } from "firebase/auth";
 import { collection, getDocs, limit, query } from "firebase/firestore";
 import {
   getRegistrations,
-  updateApprovalStatus
+  updateRegistrationStatus
 } from "../src/services/registrationService";
 import {
   listenToAuthState,
@@ -23,6 +23,22 @@ type PendingAction = {
   teamName: string;
   status: "approved" | "hold";
 };
+
+const getNormalizedStatus = (status: string | undefined) => {
+  if (status === "approved" || status === "hold" || status === "pending") {
+    return status;
+  }
+
+  return "pending";
+};
+
+const getRegistrationStatus = (registration: {
+  status?: string;
+  approvalStatus?: string;
+}) =>
+  getNormalizedStatus(
+    registration.status || registration.approvalStatus || "pending"
+  );
 
 export default function Home() {
   const [registrations, setRegistrations] = useState<
@@ -41,7 +57,8 @@ export default function Home() {
       leaderEmail: string;
       paymentProofUrl: string;
       submittedAt?: unknown;
-      approvalStatus: string;
+      status?: string;
+      approvalStatus?: string;
     }>
   >([]);
   const [authLoading, setAuthLoading] = useState(true);
@@ -67,14 +84,6 @@ export default function Home() {
     string | null
   >(null);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
-
-  const getNormalizedStatus = (status: string | undefined) => {
-    if (status === "approved" || status === "hold" || status === "pending") {
-      return status;
-    }
-
-    return "pending";
-  };
 
   const formatStatusLabel = (status: string) =>
     status.charAt(0).toUpperCase() + status.slice(1);
@@ -209,7 +218,7 @@ export default function Home() {
 
   const handleStatusUpdate = async (id: string, status: string) => {
     setUpdatingId(id);
-    await updateApprovalStatus(id, status);
+    await updateRegistrationStatus(id, status);
     await fetchRegistrations();
     console.log("Status updated safely");
     setUpdatingId(null);
@@ -236,13 +245,13 @@ export default function Home() {
     () => ({
       all: registrations.length,
       pending: registrations.filter(
-        (registration) => getNormalizedStatus(registration.approvalStatus) === "pending"
+        (registration) => getRegistrationStatus(registration) === "pending"
       ).length,
       approved: registrations.filter(
-        (registration) => getNormalizedStatus(registration.approvalStatus) === "approved"
+        (registration) => getRegistrationStatus(registration) === "approved"
       ).length,
       hold: registrations.filter(
-        (registration) => getNormalizedStatus(registration.approvalStatus) === "hold"
+        (registration) => getRegistrationStatus(registration) === "hold"
       ).length
     }),
     [registrations]
@@ -263,7 +272,7 @@ export default function Home() {
   const filteredRegistrations = useMemo(
     () =>
       registrations.filter((registration) => {
-        const normalizedStatus = getNormalizedStatus(registration.approvalStatus);
+        const normalizedStatus = getRegistrationStatus(registration);
         const team = (registration.teamName ?? "").toLowerCase();
         const leaderEmail = (registration.leaderEmail ?? "").toLowerCase();
         const search = searchTerm.trim().toLowerCase();
@@ -579,16 +588,14 @@ export default function Home() {
                   <td className={`${styles.cell} ${styles.statusCell}`}>
                     <span
                       className={`${styles.statusBadge} ${
-                        getNormalizedStatus(registration.approvalStatus) === "approved"
+                        getRegistrationStatus(registration) === "approved"
                           ? styles.statusApproved
-                          : getNormalizedStatus(registration.approvalStatus) === "hold"
+                          : getRegistrationStatus(registration) === "hold"
                             ? styles.statusHold
                             : styles.statusPending
                       }`}
                     >
-                      {formatStatusLabel(
-                        getNormalizedStatus(registration.approvalStatus)
-                      )}
+                      {formatStatusLabel(getRegistrationStatus(registration))}
                     </span>
                   </td>
                   <td className={`${styles.cell} ${styles.actionsCell}`}>
@@ -601,7 +608,7 @@ export default function Home() {
                         disabled={
                           READ_ONLY_MODE ||
                           updatingId === registration.id ||
-                          getNormalizedStatus(registration.approvalStatus) === "approved"
+                          getRegistrationStatus(registration) === "approved"
                         }
                         className={styles.approveButton}
                       >
@@ -615,7 +622,7 @@ export default function Home() {
                         disabled={
                           READ_ONLY_MODE ||
                           updatingId === registration.id ||
-                          getNormalizedStatus(registration.approvalStatus) === "hold"
+                          getRegistrationStatus(registration) === "hold"
                         }
                         className={styles.holdButton}
                       >
@@ -705,14 +712,14 @@ export default function Home() {
               </div>
               <span
                 className={`${styles.statusBadge} ${
-                  getNormalizedStatus(registration.approvalStatus) === "approved"
+                  getRegistrationStatus(registration) === "approved"
                     ? styles.statusApproved
-                    : getNormalizedStatus(registration.approvalStatus) === "hold"
+                    : getRegistrationStatus(registration) === "hold"
                       ? styles.statusHold
                       : styles.statusPending
                 }`}
               >
-                {formatStatusLabel(getNormalizedStatus(registration.approvalStatus))}
+                {formatStatusLabel(getRegistrationStatus(registration))}
               </span>
             </div>
 
@@ -756,7 +763,7 @@ export default function Home() {
                 disabled={
                   READ_ONLY_MODE ||
                   updatingId === registration.id ||
-                  getNormalizedStatus(registration.approvalStatus) === "approved"
+                  getRegistrationStatus(registration) === "approved"
                 }
                 className={styles.approveButton}
               >
@@ -770,7 +777,7 @@ export default function Home() {
                 disabled={
                   READ_ONLY_MODE ||
                   updatingId === registration.id ||
-                  getNormalizedStatus(registration.approvalStatus) === "hold"
+                  getRegistrationStatus(registration) === "hold"
                 }
                 className={styles.holdButton}
               >
@@ -890,18 +897,14 @@ export default function Home() {
                 {selectedProofRegistration ? (
                   <span
                     className={`${styles.statusBadge} ${
-                      getNormalizedStatus(selectedProofRegistration.approvalStatus) ===
-                      "approved"
+                      getRegistrationStatus(selectedProofRegistration) === "approved"
                         ? styles.statusApproved
-                        : getNormalizedStatus(selectedProofRegistration.approvalStatus) ===
-                            "hold"
+                        : getRegistrationStatus(selectedProofRegistration) === "hold"
                           ? styles.statusHold
                           : styles.statusPending
                     }`}
                   >
-                    {formatStatusLabel(
-                      getNormalizedStatus(selectedProofRegistration.approvalStatus)
-                    )}
+                    {formatStatusLabel(getRegistrationStatus(selectedProofRegistration))}
                   </span>
                 ) : null}
               </div>

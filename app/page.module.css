@@ -594,11 +594,11 @@
 }
 
 .statusHold {
-  background: #fff7ed;
-  color: #9a3412;
+  background: #fef2f2;
+  color: #b91c1c;
 }
 .statusHold::before {
-  background: #f97316;
+  background: #ef4444;
 }
 
 .actionsRow {
