@@ -27,6 +27,8 @@ export async function getRegistrations() {
         leaderEmail: data.leaderEmail,
         paymentProofUrl: data.paymentProofUrl,
         submittedAt: data.submittedAt,
+        reviewedAt: data.reviewedAt,
+        reviewedBy: data.reviewedBy,
         status: data.status ?? data.approvalStatus ?? "pending",
         approvalStatus: data.approvalStatus
       };
