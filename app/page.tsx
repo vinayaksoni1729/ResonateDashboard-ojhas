@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import type { User } from "firebase/auth";
 import { collection, getDocs, limit, query } from "firebase/firestore";
@@ -24,6 +24,29 @@ type PendingAction = {
   status: "approved" | "hold";
 };
 
+type RegistrationMember = {
+  name?: string;
+  memberName?: string;
+  registerNumber?: string;
+  registrationNumber?: string;
+  email?: string;
+};
+
+type Registration = {
+  id: string;
+  teamName: string;
+  trackChoice: string;
+  numberOfMembers: number;
+  members?: RegistrationMember[];
+  leaderEmail: string;
+  paymentProofUrl: string;
+  submittedAt?: unknown;
+  reviewedAt?: unknown;
+  reviewedBy?: string;
+  status?: string;
+  approvalStatus?: string;
+};
+
 const getNormalizedStatus = (status: string | undefined) => {
   if (status === "approved" || status === "hold" || status === "pending") {
     return status;
@@ -41,26 +64,7 @@ const getRegistrationStatus = (registration: {
   );
 
 export default function Home() {
-  const [registrations, setRegistrations] = useState<
-    Array<{
-      id: string;
-      teamName: string;
-      trackChoice: string;
-      numberOfMembers: number;
-      members?: Array<{
-        name?: string;
-        memberName?: string;
-        registerNumber?: string;
-        registrationNumber?: string;
-        email?: string;
-      }>;
-      leaderEmail: string;
-      paymentProofUrl: string;
-      submittedAt?: unknown;
-      status?: string;
-      approvalStatus?: string;
-    }>
-  >([]);
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [authLoading, setAuthLoading] = useState(true);
   const [permissionStatus, setPermissionStatus] = useState<
     "checking" | "authorized" | "denied"
@@ -84,6 +88,10 @@ export default function Home() {
     string | null
   >(null);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
+  const [csvDownloadMessage, setCsvDownloadMessage] = useState<string | null>(null);
+  const topbarRef = useRef<HTMLDivElement | null>(null);
+  const secondaryBarRef = useRef<HTMLDivElement | null>(null);
+  const [barHeights, setBarHeights] = useState({ topbar: 60, secondary: 72 });
 
   const formatStatusLabel = (status: string) =>
     status.charAt(0).toUpperCase() + status.slice(1);
@@ -143,6 +151,116 @@ export default function Home() {
   const fetchRegistrations = async () => {
     const data = await getRegistrations();
     setRegistrations(data);
+  };
+
+  const formatCsvDateTime = (value: unknown) => {
+    if (!value) {
+      return "";
+    }
+
+    let date: Date | null = null;
+
+    if (
+      typeof value === "object" &&
+      value !== null &&
+      "seconds" in value &&
+      typeof (value as { seconds: unknown }).seconds === "number"
+    ) {
+      date = new Date((value as { seconds: number }).seconds * 1000);
+    } else if (value instanceof Date) {
+      date = value;
+    } else if (typeof value === "string" || typeof value === "number") {
+      const parsed = new Date(value);
+      date = Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    if (!date || Number.isNaN(date.getTime())) {
+      return "";
+    }
+
+    const pad = (num: number) => String(num).padStart(2, "0");
+
+    return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()} ${pad(
+      date.getHours()
+    )}:${pad(date.getMinutes())}`;
+  };
+
+  const sanitizeCsvText = (value: unknown) =>
+    String(value ?? "").trim().replace(/,/g, ";");
+
+  const escapeCsvValue = (value: unknown) =>
+    `"${sanitizeCsvText(value).replace(/"/g, '""')}"`;
+
+  const getLeaderRegisterNumber = (registration: Registration) => {
+    if (!Array.isArray(registration.members)) {
+      return "";
+    }
+
+    const leader = registration.members.find((member) => {
+      const memberEmail = (member.email ?? "").trim().toLowerCase();
+      return memberEmail === (registration.leaderEmail ?? "").trim().toLowerCase();
+    });
+
+    return leader ? getMemberRegisterNumber(leader) : "";
+  };
+
+  const exportToCSV = (registrationsToExport: Registration[], filterName: string) => {
+    const headers = [
+      "Team Name",
+      "Track",
+      "Leader Email",
+      "Leader Register Number",
+      "Members Count",
+      "Status",
+      "Submitted At",
+      "Reviewed By",
+      "Reviewed At",
+      "Members"
+    ];
+
+    const rows = registrationsToExport.map((registration) => {
+      const membersJoined = Array.isArray(registration.members)
+        ? registration.members
+            .map((member) => getMemberName(member))
+            .filter((name) => typeof name === "string" && name.trim().length > 0)
+            .join(" | ")
+        : "";
+
+      return [
+        escapeCsvValue(registration.teamName),
+        escapeCsvValue(registration.trackChoice),
+        escapeCsvValue(registration.leaderEmail),
+        escapeCsvValue(getLeaderRegisterNumber(registration)),
+        escapeCsvValue(registration.numberOfMembers),
+        escapeCsvValue(getRegistrationStatus(registration)),
+        escapeCsvValue(formatCsvDateTime(registration.submittedAt)),
+        escapeCsvValue(registration.reviewedBy ?? ""),
+        escapeCsvValue(formatCsvDateTime(registration.reviewedAt)),
+        escapeCsvValue(membersJoined)
+      ].join(",");
+    });
+
+    const csvContent = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const datePart = new Date().toISOString().slice(0, 10);
+    const fileName = `hackathon_registrations_${filterName}_${registrationsToExport.length}_${datePart}.csv`;
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadCSV = () => {
+    if (filteredRegistrations.length === 0) {
+      return;
+    }
+
+    exportToCSV(filteredRegistrations, activeFilter);
+    setCsvDownloadMessage(`CSV downloaded (${filteredRegistrations.length} registrations)`);
   };
 
   useEffect(() => {
@@ -216,6 +334,43 @@ export default function Home() {
     void loadRegistrations();
   }, [currentUser, permissionStatus]);
 
+  useEffect(() => {
+    if (!csvDownloadMessage) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCsvDownloadMessage(null);
+    }, 3000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [csvDownloadMessage]);
+
+  useEffect(() => {
+    const updateBarHeights = () => {
+      const topbarHeight = topbarRef.current
+        ? Math.ceil(topbarRef.current.getBoundingClientRect().height)
+        : 60;
+      const secondaryHeight = secondaryBarRef.current
+        ? Math.ceil(secondaryBarRef.current.getBoundingClientRect().height)
+        : 72;
+
+      setBarHeights((current) =>
+        current.topbar === topbarHeight && current.secondary === secondaryHeight
+          ? current
+          : { topbar: topbarHeight, secondary: secondaryHeight }
+      );
+    };
+
+    const frame = window.requestAnimationFrame(updateBarHeights);
+    window.addEventListener("resize", updateBarHeights);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", updateBarHeights);
+    };
+  }, [currentUser, registrations]);
+
   const handleStatusUpdate = async (id: string, status: string) => {
     setUpdatingId(id);
     await updateRegistrationStatus(id, status);
@@ -269,24 +424,19 @@ export default function Home() {
     return uniqueTracks.sort((a, b) => a.localeCompare(b));
   }, [registrations]);
 
-  const filteredRegistrations = useMemo(
-    () =>
-      registrations.filter((registration) => {
-        const normalizedStatus = getRegistrationStatus(registration);
-        const team = (registration.teamName ?? "").toLowerCase();
-        const leaderEmail = (registration.leaderEmail ?? "").toLowerCase();
-        const search = searchTerm.trim().toLowerCase();
-        const matchesSearch =
-          search.length === 0 || team.includes(search) || leaderEmail.includes(search);
-        const matchesTrack =
-          selectedTrack === "all" || registration.trackChoice === selectedTrack;
-        const matchesStatus =
-          activeFilter === "all" || normalizedStatus === activeFilter;
+  const filteredRegistrations = registrations.filter((registration) => {
+    const normalizedStatus = getRegistrationStatus(registration);
+    const team = (registration.teamName ?? "").toLowerCase();
+    const leaderEmail = (registration.leaderEmail ?? "").toLowerCase();
+    const search = searchTerm.trim().toLowerCase();
+    const matchesSearch =
+      search.length === 0 || team.includes(search) || leaderEmail.includes(search);
+    const matchesTrack =
+      selectedTrack === "all" || registration.trackChoice === selectedTrack;
+    const matchesStatus = activeFilter === "all" || normalizedStatus === activeFilter;
 
-        return matchesSearch && matchesTrack && matchesStatus;
-      }),
-    [activeFilter, registrations, searchTerm, selectedTrack]
-  );
+    return matchesSearch && matchesTrack && matchesStatus;
+  });
 
   const selectedProofRegistration =
     selectedProofRegistrationId !== null
@@ -380,8 +530,11 @@ export default function Home() {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.topbar}>
+    <div
+      className={styles.container}
+      style={{ paddingTop: `${barHeights.topbar + barHeights.secondary + 20}px` }}
+    >
+      <div className={styles.topbar} ref={topbarRef}>
         <div className={styles.topbarInner}>
           <div className={styles.topbarBrand}>
             <span className={styles.brandDot} />
@@ -444,10 +597,29 @@ export default function Home() {
             >
               Refresh
             </button>
+            <span
+              className={styles.csvButtonWrap}
+              title={
+                filteredRegistrations.length === 0 ? "No registrations to export" : undefined
+              }
+            >
+              <button
+                type="button"
+                className={`${styles.csvButton} ${styles.csvTopbarButton}`}
+                onClick={handleDownloadCSV}
+                disabled={filteredRegistrations.length === 0}
+              >
+                Download CSV
+              </button>
+            </span>
           </div>
         </div>
       </div>
-      <div className={styles.secondaryBar}>
+      <div
+        className={styles.secondaryBar}
+        ref={secondaryBarRef}
+        style={{ top: `${barHeights.topbar}px` }}
+      >
         <div className={styles.secondaryInner}>
           <div className={styles.searchWrap}>
             <svg
@@ -529,6 +701,11 @@ export default function Home() {
         </div>
       </div>
       <h1 className={styles.title}>Registrations Dashboard</h1>
+      {csvDownloadMessage ? (
+        <div className={styles.csvToast} role="status" aria-live="polite">
+          {csvDownloadMessage}
+        </div>
+      ) : null}
       <div className={styles.tableWrap}>
         <table className={styles.table}>
           <thead>
