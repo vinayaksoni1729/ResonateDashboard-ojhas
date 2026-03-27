@@ -87,6 +87,18 @@
   line-height: 1.5;
 }
 
+.authErrorMessage {
+  margin: 12px 0;
+  padding: 10px 12px;
+  background: #fee2e2;
+  border: 0.5px solid #fecaca;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #991b1b;
+  line-height: 1.5;
+  text-align: center;
+}
+
 .authButton {
   border: 0.5px solid #d1d5db;
   background: #fff;
@@ -407,6 +419,30 @@
   border-color: #a5b4fc;
 }
 
+.scannerButton {
+  border: 0.5px solid #0891b2;
+  border-radius: 6px;
+  background: #06b6d4;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-left: 6px;
+}
+
+.scannerButton:hover {
+  background: #0891b2;
+}
+
+.scannerButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #22d3ee;
+  border-color: #22d3ee;
+}
+
 .csvToast {
   margin: 0 0 12px;
   display: inline-flex;
@@ -544,6 +580,11 @@
   width: 100px;
 }
 
+.checkInHeader,
+.checkInCell {
+  width: 120px;
+}
+
 .actionsHeader,
 .actionsCell {
   width: 200px;
@@ -643,6 +684,28 @@
 }
 .statusHold::before {
   background: #ef4444;
+}
+
+.checkInChecked {
+  background: #f0fdf4;
+  color: #14532d;
+}
+.checkInChecked::before {
+  background: #22c55e;
+}
+
+.checkInNotChecked {
+  background: #f3f4f6;
+  color: #374151;
+}
+.checkInNotChecked::before {
+  background: #9ca3af;
+}
+
+.checkInNA {
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .actionsRow {
@@ -1032,6 +1095,95 @@
   cursor: not-allowed;
 }
 
+/* Permission Error Popup Styles */
+.permissionErrorOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+}
+
+.permissionErrorDialog {
+  background: var(--surface-bg);
+  border: 0.5px solid var(--border-color);
+  border-radius: 12px;
+  padding: 32px 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  animation: permission-error-slide-up 0.3s ease-out;
+}
+
+@keyframes permission-error-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.permissionErrorIconBox {
+  font-size: 32px;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.permissionErrorTitle {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.permissionErrorMessage {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.permissionErrorButtons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.permissionErrorButton {
+  padding: 8px 16px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.permissionErrorButton:hover {
+  background: #dc2626;
+}
+
+.permissionErrorButton:active {
+  background: #b91c1c;
+}
+
+.permissionErrorButton:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
 @media (max-width: 900px) {
   .container {
     width: min(100%, 760px);
@@ -1230,4 +1382,93 @@
     max-height: calc(100vh - 20px);
     overflow: auto;
   }
+}
+
+/* Permission Error Popup Styles */
+.permissionErrorOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+}
+
+.permissionErrorDialog {
+  background: var(--surface-bg);
+  border: 0.5px solid var(--border-color);
+  border-radius: 12px;
+  padding: 32px 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  animation: permission-error-slide-up 0.3s ease-out;
+}
+
+@keyframes permission-error-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.permissionErrorIconBox {
+  font-size: 32px;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.permissionErrorTitle {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.permissionErrorMessage {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.permissionErrorButtons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.permissionErrorButton {
+  padding: 8px 16px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.permissionErrorButton:hover {
+  background: #dc2626;
+}
+
+.permissionErrorButton:active {
+  background: #b91c1c;
+}
+
+.permissionErrorButton:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
 }

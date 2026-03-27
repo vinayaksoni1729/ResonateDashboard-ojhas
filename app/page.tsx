@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { User } from "firebase/auth";
 import { collection, getDocs, limit, query } from "firebase/firestore";
@@ -45,6 +46,7 @@ type Registration = {
   reviewedBy?: string;
   status?: string;
   approvalStatus?: string;
+  checkIn?: boolean;
 };
 
 const getNormalizedStatus = (status: string | undefined) => {
@@ -64,8 +66,10 @@ const getRegistrationStatus = (registration: {
   );
 
 export default function Home() {
+  const router = useRouter();
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [authLoading, setAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   const [permissionStatus, setPermissionStatus] = useState<
     "checking" | "authorized" | "denied"
   >("checking");
@@ -89,6 +93,7 @@ export default function Home() {
   >(null);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
   const [csvDownloadMessage, setCsvDownloadMessage] = useState<string | null>(null);
+  const [permissionErrorMessage, setPermissionErrorMessage] = useState<string | null>(null);
   const topbarRef = useRef<HTMLDivElement | null>(null);
   const secondaryBarRef = useRef<HTMLDivElement | null>(null);
   const [barHeights, setBarHeights] = useState({ topbar: 60, secondary: 72 });
@@ -149,8 +154,32 @@ export default function Home() {
   };
 
   const fetchRegistrations = async () => {
-    const data = await getRegistrations();
-    setRegistrations(data);
+    try {
+      const data = await getRegistrations();
+      setRegistrations(data);
+    } catch (error) {
+      const errorCode =
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        typeof error.code === "string"
+          ? error.code
+          : "";
+
+      const errorMessage =
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error &&
+        typeof error.message === "string"
+          ? error.message
+          : "";
+
+      if (errorCode === "permission-denied" || errorMessage === "ACCESS_DENIED") {
+        setPermissionErrorMessage("You do not have permission to access registrations.");
+      } else {
+        console.error("Error fetching registrations:", error);
+      }
+    }
   };
 
   const formatCsvDateTime = (value: unknown) => {
@@ -347,6 +376,18 @@ export default function Home() {
   }, [csvDownloadMessage]);
 
   useEffect(() => {
+    if (!permissionErrorMessage) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setPermissionErrorMessage(null);
+    }, 5000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [permissionErrorMessage]);
+
+  useEffect(() => {
     const updateBarHeights = () => {
       const topbarHeight = topbarRef.current
         ? Math.ceil(topbarRef.current.getBoundingClientRect().height)
@@ -373,10 +414,62 @@ export default function Home() {
 
   const handleStatusUpdate = async (id: string, status: string) => {
     setUpdatingId(id);
-    await updateRegistrationStatus(id, status);
-    await fetchRegistrations();
-    console.log("Status updated safely");
-    setUpdatingId(null);
+    try {
+      // If approving, generate teamId first
+      let teamId = null;
+      if (status === "approved") {
+        teamId = `RESO${Date.now()}`;
+      }
+
+      // Update status in Firestore (frontend) with teamId if approving
+      await updateRegistrationStatus(id, status, teamId);
+
+      // If approving, send email with QR code
+      if (status === "approved" && teamId) {
+        const registration = registrations.find((r) => r.id === id);
+        if (registration) {
+          await fetch("/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: registration.leaderEmail,
+              teamId,
+              teamName: registration.teamName
+            })
+          }).catch((error) => {
+            console.error("Email sending failed:", error);
+          });
+        }
+      }
+
+      await fetchRegistrations();
+      console.log("Status updated safely");
+    } catch (error) {
+      const errorCode =
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        typeof error.code === "string"
+          ? error.code
+          : "";
+
+      const errorMessage =
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error &&
+        typeof error.message === "string"
+          ? error.message
+          : "";
+
+      if (errorCode === "permission-denied" || errorMessage === "PERMISSION_DENIED") {
+        setPermissionErrorMessage("You do not have permission to update this registration.");
+      } else {
+        setPermissionErrorMessage("An error occurred while updating the registration.");
+        console.error("Error updating status:", error);
+      }
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   const promptStatusUpdate = (
@@ -461,10 +554,34 @@ export default function Home() {
       <div className={styles.authGate}>
         <div className={styles.authCard}>
           <h1 className={styles.authTitle}>Organizer Dashboard</h1>
+          {authError ? (
+            <div className={styles.authErrorMessage}>
+              {authError}
+            </div>
+          ) : null}
           <button
             type="button"
             className={styles.authButton}
-            onClick={() => void signInWithGoogle()}
+            onClick={async () => {
+              try {
+                await signInWithGoogle();
+                setAuthError(null);
+              } catch (error) {
+                const errorMessage =
+                  typeof error === "object" &&
+                  error !== null &&
+                  "message" in error &&
+                  typeof error.message === "string"
+                    ? error.message
+                    : "";
+
+                if (errorMessage === "UNAUTHORIZED_USER") {
+                  setAuthError("Your email is not authorized to access this dashboard. Please contact the event administrator.");
+                } else {
+                  setAuthError("Sign in failed. Please try again.");
+                }
+              }
+            }}
           >
             Sign in with Google
           </button>
@@ -612,6 +729,14 @@ export default function Home() {
                 Download CSV
               </button>
             </span>
+            <button
+              type="button"
+              className={styles.scannerButton}
+              onClick={() => router.push("/scanner")}
+              title="Open QR code scanner for check-ins"
+            >
+              Open Scanner
+            </button>
           </div>
         </div>
       </div>
@@ -706,6 +831,37 @@ export default function Home() {
           {csvDownloadMessage}
         </div>
       ) : null}
+      {permissionErrorMessage ? (
+        <div
+          className={styles.permissionErrorOverlay}
+          role="presentation"
+          onClick={() => setPermissionErrorMessage(null)}
+        >
+          <div
+            className={styles.permissionErrorDialog}
+            role="alertdialog"
+            aria-modal="true"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className={styles.permissionErrorIconBox}>
+              🔒
+            </div>
+            <h2 className={styles.permissionErrorTitle}>Access Denied</h2>
+            <p className={styles.permissionErrorMessage}>
+              {permissionErrorMessage}
+            </p>
+            <div className={styles.permissionErrorButtons}>
+              <button
+                type="button"
+                onClick={() => setPermissionErrorMessage(null)}
+                className={styles.permissionErrorButton}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className={styles.tableWrap}>
         <table className={styles.table}>
           <thead>
@@ -716,6 +872,7 @@ export default function Home() {
               <th className={`${styles.headerCell} ${styles.emailHeader}`}>Leader Email</th>
               <th className={`${styles.headerCell} ${styles.paymentHeader}`}>Payment</th>
               <th className={`${styles.headerCell} ${styles.statusHeader}`}>Status</th>
+              <th className={`${styles.headerCell} ${styles.checkInHeader}`}>Check-In</th>
               <th className={`${styles.headerCell} ${styles.actionsHeader}`}>Actions</th>
             </tr>
           </thead>
@@ -775,6 +932,21 @@ export default function Home() {
                       {formatStatusLabel(getRegistrationStatus(registration))}
                     </span>
                   </td>
+                  <td className={`${styles.cell} ${styles.checkInCell}`}>
+                    {getRegistrationStatus(registration) === "approved" ? (
+                      <span
+                        className={`${styles.statusBadge} ${
+                          registration.checkIn === true
+                            ? styles.checkInChecked
+                            : styles.checkInNotChecked
+                        }`}
+                      >
+                        {registration.checkIn === true ? "Checked In" : "Not Checked In"}
+                      </span>
+                    ) : (
+                      <span className={styles.checkInNA}>—</span>
+                    )}
+                  </td>
                   <td className={`${styles.cell} ${styles.actionsCell}`}>
                     <div className={styles.actionsRow}>
                       <button
@@ -823,7 +995,7 @@ export default function Home() {
               </tr>
               {expandedRegistrationId === registration.id ? (
                  <tr>
-                   <td className={styles.expandedCell} colSpan={7}>
+                   <td className={styles.expandedCell} colSpan={8}>
                      <div className={styles.membersPanel}>
                        <div className={styles.membersPanelLabel}>
                          TEAM MEMBERS —{" "}
