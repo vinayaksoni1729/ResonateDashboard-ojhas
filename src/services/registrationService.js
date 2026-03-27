@@ -74,31 +74,47 @@ export async function updateRegistrationStatus(id, status) {
     );
   }
 
-  const registrationRef = doc(db, "registrations", id);
-  const beforeSnapshot = await getDoc(registrationRef);
+  try {
+    const registrationRef = doc(db, "registrations", id);
+    const beforeSnapshot = await getDoc(registrationRef);
 
-  if (!beforeSnapshot.exists()) {
-    throw new Error(`Registration document not found: ${id}`);
+    if (!beforeSnapshot.exists()) {
+      throw new Error(`Registration document not found: ${id}`);
+    }
+
+    const beforeData = beforeSnapshot.data();
+    const hasTeamName = Object.prototype.hasOwnProperty.call(beforeData, "teamName");
+    const hasMembers = Object.prototype.hasOwnProperty.call(beforeData, "members");
+    const hasPaymentProofUrl = Object.prototype.hasOwnProperty.call(
+      beforeData,
+      "paymentProofUrl"
+    );
+
+    if (!hasTeamName || !hasMembers || !hasPaymentProofUrl) {
+      throw new Error("Missing required fields. Update aborted.");
+    }
+
+    await updateDoc(registrationRef, {
+      status,
+      reviewedAt: serverTimestamp()
+    });
+
+    console.log("Status updated safely");
+  } catch (error) {
+    const errorCode =
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      typeof error.code === "string"
+        ? error.code
+        : "";
+
+    if (errorCode === "permission-denied") {
+      throw new Error("PERMISSION_DENIED");
+    }
+
+    throw error;
   }
-
-  const beforeData = beforeSnapshot.data();
-  const hasTeamName = Object.prototype.hasOwnProperty.call(beforeData, "teamName");
-  const hasMembers = Object.prototype.hasOwnProperty.call(beforeData, "members");
-  const hasPaymentProofUrl = Object.prototype.hasOwnProperty.call(
-    beforeData,
-    "paymentProofUrl"
-  );
-
-  if (!hasTeamName || !hasMembers || !hasPaymentProofUrl) {
-    throw new Error("Missing required fields. Update aborted.");
-  }
-
-  await updateDoc(registrationRef, {
-    status,
-    reviewedAt: serverTimestamp()
-  });
-
-  console.log("Status updated safely");
 }
 
 export async function testApprovalUpdate() {

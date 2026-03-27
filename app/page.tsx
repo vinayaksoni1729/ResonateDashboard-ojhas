@@ -66,6 +66,7 @@ const getRegistrationStatus = (registration: {
 export default function Home() {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [authLoading, setAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   const [permissionStatus, setPermissionStatus] = useState<
     "checking" | "authorized" | "denied"
   >("checking");
@@ -89,6 +90,7 @@ export default function Home() {
   >(null);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
   const [csvDownloadMessage, setCsvDownloadMessage] = useState<string | null>(null);
+  const [permissionErrorMessage, setPermissionErrorMessage] = useState<string | null>(null);
   const topbarRef = useRef<HTMLDivElement | null>(null);
   const secondaryBarRef = useRef<HTMLDivElement | null>(null);
   const [barHeights, setBarHeights] = useState({ topbar: 60, secondary: 72 });
@@ -149,8 +151,32 @@ export default function Home() {
   };
 
   const fetchRegistrations = async () => {
-    const data = await getRegistrations();
-    setRegistrations(data);
+    try {
+      const data = await getRegistrations();
+      setRegistrations(data);
+    } catch (error) {
+      const errorCode =
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        typeof error.code === "string"
+          ? error.code
+          : "";
+
+      const errorMessage =
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error &&
+        typeof error.message === "string"
+          ? error.message
+          : "";
+
+      if (errorCode === "permission-denied" || errorMessage === "ACCESS_DENIED") {
+        setPermissionErrorMessage("You do not have permission to access registrations.");
+      } else {
+        console.error("Error fetching registrations:", error);
+      }
+    }
   };
 
   const formatCsvDateTime = (value: unknown) => {
@@ -347,6 +373,18 @@ export default function Home() {
   }, [csvDownloadMessage]);
 
   useEffect(() => {
+    if (!permissionErrorMessage) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setPermissionErrorMessage(null);
+    }, 5000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [permissionErrorMessage]);
+
+  useEffect(() => {
     const updateBarHeights = () => {
       const topbarHeight = topbarRef.current
         ? Math.ceil(topbarRef.current.getBoundingClientRect().height)
@@ -373,10 +411,36 @@ export default function Home() {
 
   const handleStatusUpdate = async (id: string, status: string) => {
     setUpdatingId(id);
-    await updateRegistrationStatus(id, status);
-    await fetchRegistrations();
-    console.log("Status updated safely");
-    setUpdatingId(null);
+    try {
+      await updateRegistrationStatus(id, status);
+      await fetchRegistrations();
+      console.log("Status updated safely");
+    } catch (error) {
+      const errorCode =
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        typeof error.code === "string"
+          ? error.code
+          : "";
+
+      const errorMessage =
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error &&
+        typeof error.message === "string"
+          ? error.message
+          : "";
+
+      if (errorCode === "permission-denied" || errorMessage === "PERMISSION_DENIED") {
+        setPermissionErrorMessage("You do not have permission to update this registration.");
+      } else {
+        setPermissionErrorMessage("An error occurred while updating the registration.");
+        console.error("Error updating status:", error);
+      }
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   const promptStatusUpdate = (
@@ -461,10 +525,34 @@ export default function Home() {
       <div className={styles.authGate}>
         <div className={styles.authCard}>
           <h1 className={styles.authTitle}>Organizer Dashboard</h1>
+          {authError ? (
+            <div className={styles.authErrorMessage}>
+              {authError}
+            </div>
+          ) : null}
           <button
             type="button"
             className={styles.authButton}
-            onClick={() => void signInWithGoogle()}
+            onClick={async () => {
+              try {
+                await signInWithGoogle();
+                setAuthError(null);
+              } catch (error) {
+                const errorMessage =
+                  typeof error === "object" &&
+                  error !== null &&
+                  "message" in error &&
+                  typeof error.message === "string"
+                    ? error.message
+                    : "";
+
+                if (errorMessage === "UNAUTHORIZED_USER") {
+                  setAuthError("Your email is not authorized to access this dashboard. Please contact the event administrator.");
+                } else {
+                  setAuthError("Sign in failed. Please try again.");
+                }
+              }
+            }}
           >
             Sign in with Google
           </button>
@@ -704,6 +792,37 @@ export default function Home() {
       {csvDownloadMessage ? (
         <div className={styles.csvToast} role="status" aria-live="polite">
           {csvDownloadMessage}
+        </div>
+      ) : null}
+      {permissionErrorMessage ? (
+        <div
+          className={styles.permissionErrorOverlay}
+          role="presentation"
+          onClick={() => setPermissionErrorMessage(null)}
+        >
+          <div
+            className={styles.permissionErrorDialog}
+            role="alertdialog"
+            aria-modal="true"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className={styles.permissionErrorIconBox}>
+              🔒
+            </div>
+            <h2 className={styles.permissionErrorTitle}>Access Denied</h2>
+            <p className={styles.permissionErrorMessage}>
+              {permissionErrorMessage}
+            </p>
+            <div className={styles.permissionErrorButtons}>
+              <button
+                type="button"
+                onClick={() => setPermissionErrorMessage(null)}
+                className={styles.permissionErrorButton}
+              >
+                OK
+              </button>
+            </div>
+          </div>
         </div>
       ) : null}
       <div className={styles.tableWrap}>
