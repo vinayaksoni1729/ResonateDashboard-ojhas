@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { User } from "firebase/auth";
 import { collection, getDocs, limit, query } from "firebase/firestore";
@@ -45,6 +46,7 @@ type Registration = {
   reviewedBy?: string;
   status?: string;
   approvalStatus?: string;
+  checkIn?: boolean;
 };
 
 const getNormalizedStatus = (status: string | undefined) => {
@@ -64,6 +66,7 @@ const getRegistrationStatus = (registration: {
   );
 
 export default function Home() {
+  const router = useRouter();
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [authLoading, setAuthLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -412,7 +415,33 @@ export default function Home() {
   const handleStatusUpdate = async (id: string, status: string) => {
     setUpdatingId(id);
     try {
-      await updateRegistrationStatus(id, status);
+      // If approving, generate teamId first
+      let teamId = null;
+      if (status === "approved") {
+        teamId = `RESO${Date.now()}`;
+      }
+
+      // Update status in Firestore (frontend) with teamId if approving
+      await updateRegistrationStatus(id, status, teamId);
+
+      // If approving, send email with QR code
+      if (status === "approved" && teamId) {
+        const registration = registrations.find((r) => r.id === id);
+        if (registration) {
+          await fetch("/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: registration.leaderEmail,
+              teamId,
+              teamName: registration.teamName
+            })
+          }).catch((error) => {
+            console.error("Email sending failed:", error);
+          });
+        }
+      }
+
       await fetchRegistrations();
       console.log("Status updated safely");
     } catch (error) {
@@ -700,6 +729,14 @@ export default function Home() {
                 Download CSV
               </button>
             </span>
+            <button
+              type="button"
+              className={styles.scannerButton}
+              onClick={() => router.push("/scanner")}
+              title="Open QR code scanner for check-ins"
+            >
+              Open Scanner
+            </button>
           </div>
         </div>
       </div>
@@ -835,6 +872,7 @@ export default function Home() {
               <th className={`${styles.headerCell} ${styles.emailHeader}`}>Leader Email</th>
               <th className={`${styles.headerCell} ${styles.paymentHeader}`}>Payment</th>
               <th className={`${styles.headerCell} ${styles.statusHeader}`}>Status</th>
+              <th className={`${styles.headerCell} ${styles.checkInHeader}`}>Check-In</th>
               <th className={`${styles.headerCell} ${styles.actionsHeader}`}>Actions</th>
             </tr>
           </thead>
@@ -894,6 +932,21 @@ export default function Home() {
                       {formatStatusLabel(getRegistrationStatus(registration))}
                     </span>
                   </td>
+                  <td className={`${styles.cell} ${styles.checkInCell}`}>
+                    {getRegistrationStatus(registration) === "approved" ? (
+                      <span
+                        className={`${styles.statusBadge} ${
+                          registration.checkIn === true
+                            ? styles.checkInChecked
+                            : styles.checkInNotChecked
+                        }`}
+                      >
+                        {registration.checkIn === true ? "Checked In" : "Not Checked In"}
+                      </span>
+                    ) : (
+                      <span className={styles.checkInNA}>—</span>
+                    )}
+                  </td>
                   <td className={`${styles.cell} ${styles.actionsCell}`}>
                     <div className={styles.actionsRow}>
                       <button
@@ -942,7 +995,7 @@ export default function Home() {
               </tr>
               {expandedRegistrationId === registration.id ? (
                  <tr>
-                   <td className={styles.expandedCell} colSpan={7}>
+                   <td className={styles.expandedCell} colSpan={8}>
                      <div className={styles.membersPanel}>
                        <div className={styles.membersPanelLabel}>
                          TEAM MEMBERS —{" "}

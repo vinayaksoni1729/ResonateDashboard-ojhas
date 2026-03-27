@@ -419,6 +419,30 @@
   border-color: #a5b4fc;
 }
 
+.scannerButton {
+  border: 0.5px solid #0891b2;
+  border-radius: 6px;
+  background: #06b6d4;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-left: 6px;
+}
+
+.scannerButton:hover {
+  background: #0891b2;
+}
+
+.scannerButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #22d3ee;
+  border-color: #22d3ee;
+}
+
 .csvToast {
   margin: 0 0 12px;
   display: inline-flex;
@@ -556,6 +580,11 @@
   width: 100px;
 }
 
+.checkInHeader,
+.checkInCell {
+  width: 120px;
+}
+
 .actionsHeader,
 .actionsCell {
   width: 200px;
@@ -655,6 +684,28 @@
 }
 .statusHold::before {
   background: #ef4444;
+}
+
+.checkInChecked {
+  background: #f0fdf4;
+  color: #14532d;
+}
+.checkInChecked::before {
+  background: #22c55e;
+}
+
+.checkInNotChecked {
+  background: #f3f4f6;
+  color: #374151;
+}
+.checkInNotChecked::before {
+  background: #9ca3af;
+}
+
+.checkInNA {
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .actionsRow {

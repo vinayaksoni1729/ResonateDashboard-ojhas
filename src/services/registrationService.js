@@ -30,7 +30,8 @@ export async function getRegistrations() {
         reviewedAt: data.reviewedAt,
         reviewedBy: data.reviewedBy,
         status: data.status ?? data.approvalStatus ?? "pending",
-        approvalStatus: data.approvalStatus
+        approvalStatus: data.approvalStatus,
+        checkIn: data.checkIn === true
       };
     });
   } catch (error) {
@@ -61,7 +62,7 @@ export async function testFirestoreConnection() {
   }
 }
 
-export async function updateRegistrationStatus(id, status) {
+export async function updateRegistrationStatus(id, status, teamId) {
   if (!auth.currentUser) {
     throw new Error("Not authenticated");
   }
@@ -94,10 +95,16 @@ export async function updateRegistrationStatus(id, status) {
       throw new Error("Missing required fields. Update aborted.");
     }
 
-    await updateDoc(registrationRef, {
+    const updateData = {
       status,
       reviewedAt: serverTimestamp()
-    });
+    };
+
+    if (teamId) {
+      updateData.teamId = teamId;
+    }
+
+    await updateDoc(registrationRef, updateData);
 
     console.log("Status updated safely");
   } catch (error) {
