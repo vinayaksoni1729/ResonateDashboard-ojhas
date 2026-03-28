@@ -1,8 +1,11 @@
 
 
 export const ALLOWED_EMAILS = [
-    "drxrecover@gmail.com"
-
+    "drxrecover@gmail.com",
+    "helloojasmutreja@gmail.com",
+    "mlsasrm14@gmail.com",
+    'anuragrege@gmail.com',
+    'Lohitkolluri@gmail.com'
 ];
 
 export const ALLOWED_DOMAINS = [
