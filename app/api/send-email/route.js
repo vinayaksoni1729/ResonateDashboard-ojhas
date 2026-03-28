@@ -80,69 +80,70 @@ export async function POST(request) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resonate Hackathon 2.0</title>
+  <title>You're in — Resonate Hackathon 2.0</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+  </style>
+  <!--[if mso]><style>*{font-family:Arial,Helvetica,sans-serif!important;}</style><![endif]-->
 </head>
-<body style="margin:0;padding:0;background-color:#07051a;font-family:Georgia,'Times New Roman',serif;">
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;-webkit-text-size-adjust:100%;">
 
-  <!-- Outer wrapper -->
-  <table width="100%" cellpadding="0" cellspacing="0" border="0"
-    style="background:linear-gradient(160deg,#07051a 0%,#130d35 40%,#1a0828 70%,#07051a 100%);padding:48px 16px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f4f5;">
     <tr>
-      <td align="center">
+      <td align="center" style="padding:40px 20px;">
 
-        <!-- Main container -->
-        <table width="100%" cellpadding="0" cellspacing="0" border="0"
-          style="max-width:580px;margin:0 auto;">
+        <!-- Container -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;margin:0 auto;">
 
-          <!-- ═══════════════════════════════════════ -->
-          <!-- HEADER                                  -->
-          <!-- ═══════════════════════════════════════ -->
+          <!-- ━━━ TOP STRIP (dark header) ━━━ -->
           <tr>
-            <td align="center" style="padding:0 0 8px 0;">
+            <td style="background:#1c1c1e;border-radius:16px 16px 0 0;padding:28px 32px 24px;">
 
-              <!-- Decorative top line -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <!-- Logo + brand row -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="height:1px;background:linear-gradient(90deg,transparent,#b44fff,#00cfff,#b44fff,transparent);font-size:1px;line-height:1px;">&nbsp;</td>
+                  <td width="44" valign="middle">
+                    <img
+                      src="https://media.licdn.com/dms/image/v2/D560BAQHoDXuEAmRm8g/company-logo_200_200/B56ZoM_bA_G4AI-/0/1761154555959/mlsa_srm_logo?e=2147483647&v=beta&t=DNfPHmmcztLQvmnmjwwgFGEYg06BeiTXmIXZ7IFtJtE"
+                      alt="MLSA SRM"
+                      width="36" height="36"
+                      style="display:block;border-radius:50%;"
+                    />
+                  </td>
+                  <td valign="middle">
+                    <p style="margin:0;font-size:11px;color:#a1a1aa;font-weight:500;text-transform:uppercase;letter-spacing:1.5px;">
+                      MSA SRM Presents
+                    </p>
+                  </td>
+                  <td align="right" valign="middle">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="padding:4px 10px;border-radius:100px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.2);">
+                          <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                              <td style="padding-right:5px;line-height:1;">
+                                <img src="https://api.iconify.design/lucide:circle-check.svg?color=%2322c55e&width=12&height=12" alt="" width="12" height="12" style="display:block;" />
+                              </td>
+                              <td style="font-size:11px;font-weight:600;color:#22c55e;">Approved</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
                 </tr>
               </table>
 
-              <!-- Header glow card -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                style="background:linear-gradient(180deg,rgba(90,20,160,0.35) 0%,rgba(10,5,30,0.0) 100%);border-left:1px solid rgba(180,79,255,0.25);border-right:1px solid rgba(180,79,255,0.25);padding:44px 32px 36px;">
+              <!-- Event title -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="padding-top:24px;">
                 <tr>
-                  <td align="center">
-
-                    <!-- Star/spark icon -->
-                    <p style="margin:0 0 18px;font-size:26px;line-height:1;">✦</p>
-
-                    <!-- RESONATE -->
-                    <h1 style="margin:0;font-size:46px;font-weight:900;letter-spacing:8px;line-height:1;
-                      color:#ffffff;
-                      text-shadow:0 0 18px rgba(180,79,255,0.9),0 0 40px rgba(0,207,255,0.5),0 0 80px rgba(180,79,255,0.3);">
+                  <td>
+                    <h1 style="margin:0 0 4px;font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;line-height:1.15;">
                       RESONATE
                     </h1>
-
-                    <!-- HACKATHON 2.0 -->
-                    <h2 style="margin:6px 0 0;font-size:22px;font-weight:400;letter-spacing:10px;line-height:1;
-                      color:transparent;
-                      background:linear-gradient(90deg,#b44fff,#00cfff,#ff4fd8);
-                      -webkit-background-clip:text;
-                      background-clip:text;">
-                      HACKATHON &nbsp;2.0
-                    </h2>
-
-                    <!-- Divider dots -->
-                    <p style="margin:20px 0 0;font-size:12px;letter-spacing:6px;color:rgba(180,79,255,0.6);">
-                      · · · · · · · · · ·
+                    <p style="margin:0;font-family:'Space Mono','Courier New',monospace;font-size:14px;font-weight:400;color:#71717a;letter-spacing:3px;">
+                      HACKATHON 2.0
                     </p>
-
-                    <!-- Subtitle -->
-                    <p style="margin:16px 0 0;font-size:13px;letter-spacing:3px;font-family:Arial,Helvetica,sans-serif;font-weight:400;
-                      color:#a78bda;text-transform:uppercase;">
-                      Welcome to Resonate &nbsp;
-                    </p>
-
                   </td>
                 </tr>
               </table>
@@ -150,206 +151,123 @@ export async function POST(request) {
             </td>
           </tr>
 
-          <!-- ═══════════════════════════════════════ -->
-          <!-- MAIN CARD                               -->
-          <!-- ═══════════════════════════════════════ -->
+          <!-- ━━━ PERFORATED TEAR LINE ━━━ -->
           <tr>
-            <td style="padding:4px 0 0;">
-
-              <!-- Card outer glow border (simulated via wrapping table) -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                style="background:linear-gradient(135deg,rgba(180,79,255,0.55),rgba(0,207,255,0.35),rgba(255,79,216,0.4));
-                border-radius:20px;padding:1px;">
+            <td style="background:#1c1c1e;padding:0;height:20px;position:relative;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td>
+                  <!-- Left notch -->
+                  <td width="16" style="background:#f4f4f5;border-radius:0 50% 50% 0;height:20px;"></td>
+                  <!-- Dashed line -->
+                  <td style="border-bottom:2px dashed #3f3f46;height:20px;"></td>
+                  <!-- Right notch -->
+                  <td width="16" style="background:#f4f4f5;border-radius:50% 0 0 50%;height:20px;"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-                    <!-- Card inner -->
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                      style="background:linear-gradient(145deg,#110a2a 0%,#0d071f 60%,#130b24 100%);
-                      border-radius:19px;padding:36px 32px;">
+          <!-- ━━━ TICKET BODY (white) ━━━ -->
+          <tr>
+            <td style="background:#ffffff;padding:28px 32px 0;">
+
+              <!-- Event details row -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                <tr>
+                  <!-- Date block -->
+                  <td width="50%" valign="top" style="padding-right:12px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:4px;">
                       <tr>
-                        <td>
-
-                          <!-- Welcome copy -->
-                          <p style="margin:0 0 6px;font-size:19px;font-weight:700;letter-spacing:1px;
-                            color:#ffffff;font-family:Arial,Helvetica,sans-serif;text-align:center;">
-                            Your team has been approved 
-                          </p>
-                          <p style="margin:0 0 32px;font-size:13px;color:#7c6fa0;line-height:1.7;
-                            font-family:Arial,Helvetica,sans-serif;text-align:center;">
-                            You're confirmed for Resonate Hackathon 2.0.<br/>
-                            Here are your team details and entry pass.
-                          </p>
-
-                          <!-- ─── TEAM NAME ─── -->
-                          <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                            style="margin-bottom:16px;border-radius:10px;
-                            background:rgba(255,255,255,0.03);
-                            border:1px solid rgba(180,79,255,0.2);">
-                            <tr>
-                              <td style="padding:16px 20px;">
-                                <p style="margin:0 0 4px;font-size:10px;letter-spacing:2.5px;
-                                  color:#b44fff;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;font-weight:700;">
-                                  Team Name
-                                </p>
-                                <p style="margin:0;font-size:17px;color:#f0e8ff;font-weight:700;
-                                  font-family:Arial,Helvetica,sans-serif;word-break:break-word;">
-                                  ${teamName}
-                                </p>
-                              </td>
-                            </tr>
-                          </table>
-
-                          <!-- ─── TEAM ID (hero) ─── -->
-                          <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                            style="margin-bottom:28px;border-radius:12px;
-                            background:linear-gradient(135deg,rgba(180,79,255,0.12),rgba(0,207,255,0.08));
-                            border:1.5px solid rgba(0,207,255,0.45);
-                            box-shadow:0 0 24px rgba(0,207,255,0.12),inset 0 0 20px rgba(180,79,255,0.05);">
-                            <tr>
-                              <td style="padding:22px 20px;text-align:center;">
-                                <p style="margin:0 0 8px;font-size:10px;letter-spacing:3px;
-                                  color:#00cfff;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;font-weight:800;">
-                                  ✦ &nbsp;Your Team ID &nbsp;✦
-                                </p>
-                                <p style="margin:0;font-size:26px;font-weight:900;letter-spacing:3px;
-                                  color:#00cfff;font-family:'Courier New',monospace;word-break:break-all;
-                                  text-shadow:0 0 12px rgba(0,207,255,0.7),0 0 30px rgba(0,207,255,0.3);">
-                                  ${teamId}
-                                </p>
-                              </td>
-                            </tr>
-                          </table>
-
-                          <!-- ─── EVENT DETAILS ─── -->
-                          <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                            style="margin-bottom:8px;border-radius:12px;
-                            background:rgba(255,255,255,0.02);
-                            border:1px solid rgba(180,79,255,0.15);">
-                            <tr>
-                              <td style="padding:20px 20px 8px;">
-                                <p style="margin:0 0 16px;font-size:10px;letter-spacing:2.5px;
-                                  color:#b44fff;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;font-weight:800;">
-                                  📅 &nbsp;Event Details
-                                </p>
-                              </td>
-                            </tr>
-
-                            <!-- Venue row -->
-                            <tr>
-                              <td style="padding:0 20px 14px;">
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                                  style="border-bottom:1px solid rgba(255,255,255,0.05);">
-                                  <tr>
-                                    <td width="36" valign="middle"
-                                      style="font-size:20px;padding-bottom:14px;">📍</td>
-                                    <td valign="middle" style="padding-bottom:14px;">
-                                      <p style="margin:0 0 2px;font-size:10px;letter-spacing:1.5px;
-                                        color:#7c6fa0;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;">
-                                        Venue
-                                      </p>
-                                      <p style="margin:0;font-size:14px;color:#e8deff;font-weight:600;
-                                        font-family:Arial,Helvetica,sans-serif;">
-                                        TP Mini Hall 2
-                                      </p>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-
-                            <!-- Date row -->
-                            <tr>
-                              <td style="padding:0 20px 14px;">
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                                  style="border-bottom:1px solid rgba(255,255,255,0.05);">
-                                  <tr>
-                                    <td width="36" valign="middle"
-                                      style="font-size:20px;padding-bottom:14px;">🗓️</td>
-                                    <td valign="middle" style="padding-bottom:14px;">
-                                      <p style="margin:0 0 2px;font-size:10px;letter-spacing:1.5px;
-                                        color:#7c6fa0;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;">
-                                        Date
-                                      </p>
-                                      <p style="margin:0;font-size:14px;color:#e8deff;font-weight:600;
-                                        font-family:Arial,Helvetica,sans-serif;">
-                                        3rd – 4th April
-                                      </p>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-
-                            <!-- Reporting time row -->
-                            <tr>
-                              <td style="padding:0 20px 20px;">
-                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                  <tr>
-                                    <td width="36" valign="middle" style="font-size:20px;">⏰</td>
-                                    <td valign="middle">
-                                      <p style="margin:0 0 2px;font-size:10px;letter-spacing:1.5px;
-                                        color:#7c6fa0;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;">
-                                        Reporting Time
-                                      </p>
-                                      <p style="margin:0;font-size:14px;color:#e8deff;font-weight:600;
-                                        font-family:Arial,Helvetica,sans-serif;">
-                                        9:00 AM
-                                      </p>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-
-                          </table>
-                          <!-- end event details -->
-
+                        <td style="padding-right:6px;line-height:1;">
+                          <img src="https://api.iconify.design/lucide:calendar-days.svg?color=%23a1a1aa&width=14&height=14" alt="" width="14" height="14" style="display:block;" />
                         </td>
+                        <td style="font-size:10px;color:#a1a1aa;font-weight:500;text-transform:uppercase;letter-spacing:1px;">When</td>
                       </tr>
                     </table>
-                    <!-- end card inner -->
-
+                    <p style="margin:0 0 2px;font-size:15px;color:#1c1c1e;font-weight:600;">3 – 4 April</p>
+                    <p style="margin:0;font-size:12px;color:#a1a1aa;">Report by 9:00 AM</p>
+                  </td>
+                  <!-- Venue block -->
+                  <td width="50%" valign="top" style="padding-left:12px;border-left:1px solid #e4e4e7;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:4px;">
+                      <tr>
+                        <td style="padding-right:6px;line-height:1;">
+                          <img src="https://api.iconify.design/lucide:map-pin.svg?color=%23a1a1aa&width=14&height=14" alt="" width="14" height="14" style="display:block;" />
+                        </td>
+                        <td style="font-size:10px;color:#a1a1aa;font-weight:500;text-transform:uppercase;letter-spacing:1px;">Where</td>
+                      </tr>
+                    </table>
+                    <p style="margin:0;font-size:15px;color:#1c1c1e;font-weight:600;">Mini Hall 2</p>
                   </td>
                 </tr>
               </table>
-              <!-- end glow border wrapper -->
 
-            </td>
-          </tr>
+              <!-- Divider -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                <tr><td style="height:1px;background:#f4f4f5;font-size:1px;line-height:1px;">&nbsp;</td></tr>
+              </table>
 
-          <!-- ═══════════════════════════════════════ -->
-          <!-- QR CODE SECTION                         -->
-          <!-- ═══════════════════════════════════════ -->
-          <tr>
-            <td style="padding:28px 0 0;text-align:center;">
-
-              <!-- Section label -->
-              <p style="margin:0 0 6px;font-size:10px;letter-spacing:3px;
-                color:#00cfff;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;font-weight:800;">
-                ✦ &nbsp;Your Entry QR Code &nbsp;✦
-              </p>
-              <p style="margin:0 0 20px;font-size:12px;color:#7c6fa0;
-                font-family:Arial,Helvetica,sans-serif;">
-                Show this at event check-in
-              </p>
-
-              <!-- QR glow border wrapper -->
-              <table cellpadding="0" cellspacing="0" border="0"
-                style="margin:0 auto;
-                background:linear-gradient(135deg,rgba(0,207,255,0.7),rgba(180,79,255,0.6),rgba(255,79,216,0.5));
-                border-radius:20px;padding:2px;">
+              <!-- Team details -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
                 <tr>
-                  <td>
-                    <table cellpadding="0" cellspacing="0" border="0"
-                      style="background:#0d071f;border-radius:18px;padding:22px;">
+                  <!-- Team name -->
+                  <td width="50%" valign="top" style="padding-right:12px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:4px;">
                       <tr>
-                        <td align="center">
+                        <td style="padding-right:6px;line-height:1;">
+                          <img src="https://api.iconify.design/lucide:users.svg?color=%23a1a1aa&width=14&height=14" alt="" width="14" height="14" style="display:block;" />
+                        </td>
+                        <td style="font-size:10px;color:#a1a1aa;font-weight:500;text-transform:uppercase;letter-spacing:1px;">Team</td>
+                      </tr>
+                    </table>
+                    <p style="margin:0;font-size:15px;color:#1c1c1e;font-weight:600;word-break:break-word;">
+                      ${teamName}
+                    </p>
+                  </td>
+                  <!-- Team ID -->
+                  <td width="50%" valign="top" style="padding-left:12px;border-left:1px solid #e4e4e7;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:4px;">
+                      <tr>
+                        <td style="padding-right:6px;line-height:1;">
+                          <img src="https://api.iconify.design/lucide:hash.svg?color=%23a1a1aa&width=14&height=14" alt="" width="14" height="14" style="display:block;" />
+                        </td>
+                        <td style="font-size:10px;color:#a1a1aa;font-weight:500;text-transform:uppercase;letter-spacing:1px;">Team ID</td>
+                      </tr>
+                    </table>
+                    <p style="margin:0;font-size:14px;color:#1c1c1e;font-weight:700;font-family:'Space Mono','Courier New',monospace;letter-spacing:0.8px;word-break:break-all;">
+                      ${teamId}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                <tr><td style="height:1px;background:#f4f4f5;font-size:1px;line-height:1px;">&nbsp;</td></tr>
+              </table>
+
+              <!-- QR Code centered -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                <tr>
+                  <td align="center">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:4px;">
+                      <tr>
+                        <td style="padding-right:6px;line-height:1;">
+                          <img src="https://api.iconify.design/lucide:scan-line.svg?color=%23a1a1aa&width=14&height=14" alt="" width="14" height="14" style="display:block;" />
+                        </td>
+                        <td style="font-size:10px;color:#a1a1aa;font-weight:500;text-transform:uppercase;letter-spacing:1px;">Entry Pass</td>
+                      </tr>
+                    </table>
+                    <p style="margin:0 0 16px;font-size:12px;color:#a1a1aa;">
+                      Scan at check-in
+                    </p>
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+                      <tr>
+                        <td style="padding:10px;border-radius:10px;border:1px solid #e4e4e7;background:#fafafa;">
                           <img src="${qrUrl}"
-                            alt="Team Entry QR Code"
-                            width="220" height="220"
-                            style="display:block;border-radius:10px;
-                            border:2px solid rgba(0,207,255,0.25);" />
+                            alt="Entry QR"
+                            width="160" height="160"
+                            style="display:block;border-radius:4px;" />
                         </td>
                       </tr>
                     </table>
@@ -360,143 +278,103 @@ export async function POST(request) {
             </td>
           </tr>
 
-          <!-- ═══════════════════════════════════════ -->
-          <!-- WHAT'S NEXT SECTION                     -->
-          <!-- ═══════════════════════════════════════ -->
+          <!-- ━━━ SECOND PERFORATED LINE ━━━ -->
           <tr>
-            <td style="padding:28px 0 0;">
-
-              <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                style="border-radius:14px;
-                background:linear-gradient(135deg,rgba(255,79,216,0.07),rgba(180,79,255,0.06));
-                border:1px solid rgba(255,79,216,0.2);">
+            <td style="background:#ffffff;padding:0;height:20px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="padding:24px 28px;">
+                  <td width="16" style="background:#f4f4f5;border-radius:0 50% 50% 0;height:20px;"></td>
+                  <td style="border-bottom:2px dashed #e4e4e7;height:20px;"></td>
+                  <td width="16" style="background:#f4f4f5;border-radius:50% 0 0 50%;height:20px;"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-                    <p style="margin:0 0 16px;font-size:10px;letter-spacing:2.5px;
-                      color:#ff4fd8;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;font-weight:800;">
-                      ✅ &nbsp;What's Next?
-                    </p>
+          <!-- ━━━ TICKET STUB (bottom section) ━━━ -->
+          <tr>
+            <td style="background:#ffffff;border-radius:0 0 16px 16px;padding:24px 32px 28px;">
 
-                    <!-- Item 1 -->
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                      style="margin-bottom:10px;">
+              <p style="margin:0 0 16px;font-size:10px;color:#a1a1aa;font-weight:500;text-transform:uppercase;letter-spacing:1.5px;">
+                Before you arrive
+              </p>
+
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+
+                <tr>
+                  <td style="padding:6px 0;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                       <tr>
-                        <td width="20" valign="top"
-                          style="font-size:13px;color:#00cfff;font-family:Arial,Helvetica,sans-serif;
-                          font-weight:700;padding-top:1px;">→</td>
-                        <td style="font-size:13px;color:#a394c2;line-height:1.6;
-                          font-family:Arial,Helvetica,sans-serif;padding-left:8px;">
-                          Save this email — your Team ID and QR code are your entry pass
+                        <td width="24" valign="top" style="padding-top:2px;">
+                          <img src="https://api.iconify.design/lucide:bookmark.svg?color=%231c1c1e&width=14&height=14" alt="" width="14" height="14" style="display:block;" />
+                        </td>
+                        <td style="font-size:13px;color:#52525b;line-height:1.5;">
+                          Save this email — your Team ID and QR are your entry pass
                         </td>
                       </tr>
                     </table>
-
-                    <!-- Item 2 -->
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                      style="margin-bottom:10px;">
-                      <tr>
-                        <td width="20" valign="top"
-                          style="font-size:13px;color:#00cfff;font-family:Arial,Helvetica,sans-serif;
-                          font-weight:700;padding-top:1px;">→</td>
-                        <td style="font-size:13px;color:#a394c2;line-height:1.6;
-                          font-family:Arial,Helvetica,sans-serif;padding-left:8px;">
-                          Arrive 30 minutes early for a smooth check-in
-                        </td>
-                      </tr>
-                    </table>
-
-                    <!-- Item 3 -->
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                      style="margin-bottom:10px;">
-                      <tr>
-                        <td width="20" valign="top"
-                          style="font-size:13px;color:#00cfff;font-family:Arial,Helvetica,sans-serif;
-                          font-weight:700;padding-top:1px;">→</td>
-                        <td style="font-size:13px;color:#a394c2;line-height:1.6;
-                          font-family:Arial,Helvetica,sans-serif;padding-left:8px;">
-                          Bring your laptops, chargers, and your best ideas
-                        </td>
-                      </tr>
-                    </table>
-
-                    <!-- Item 4 -->
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td width="20" valign="top"
-                          style="font-size:13px;color:#ff4fd8;font-family:Arial,Helvetica,sans-serif;
-                          font-weight:700;padding-top:1px;">→</td>
-                        <td style="font-size:13px;color:#a394c2;line-height:1.6;
-                          font-family:Arial,Helvetica,sans-serif;padding-left:8px;">
-                          Get ready for an unforgettable experience 🚀
-                        </td>
-                      </tr>
-                    </table>
-
                   </td>
                 </tr>
+
+                <tr>
+                  <td style="padding:6px 0;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td width="24" valign="top" style="padding-top:2px;">
+                          <img src="https://api.iconify.design/lucide:clock.svg?color=%231c1c1e&width=14&height=14" alt="" width="14" height="14" style="display:block;" />
+                        </td>
+                        <td style="font-size:13px;color:#52525b;line-height:1.5;">
+                          Arrive 30 minutes early for smooth check-in
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:6px 0;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td width="24" valign="top" style="padding-top:2px;">
+                          <img src="https://api.iconify.design/lucide:laptop.svg?color=%231c1c1e&width=14&height=14" alt="" width="14" height="14" style="display:block;" />
+                        </td>
+                        <td style="font-size:13px;color:#52525b;line-height:1.5;">
+                          Bring laptops, chargers, and your best ideas
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
               </table>
 
             </td>
           </tr>
 
-          <!-- ═══════════════════════════════════════ -->
-          <!-- FOOTER                                  -->
-          <!-- ═══════════════════════════════════════ -->
+          <!-- ━━━ FOOTER ━━━ -->
           <tr>
-            <td style="padding:36px 0 0;text-align:center;">
-
-              <!-- Decorative line -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                style="margin-bottom:28px;">
-                <tr>
-                  <td style="height:1px;background:linear-gradient(90deg,transparent,#b44fff,#00cfff,#b44fff,transparent);
-                    font-size:1px;line-height:1px;">&nbsp;</td>
-                </tr>
-              </table>
-
-              <p style="margin:0 0 6px;font-size:15px;color:#e8deff;font-weight:600;
-                font-family:Arial,Helvetica,sans-serif;">
-                We can't wait to see you at Resonate Hackathon 🎉
+            <td align="center" style="padding:28px 0 8px;">
+              <p style="margin:0 0 4px;font-size:12px;color:#a1a1aa;">
+                Questions? Reach out at
               </p>
-              <p style="margin:0 0 20px;font-size:12px;color:#7c6fa0;
-                font-family:Arial,Helvetica,sans-serif;">
-                Questions? We're here for you.
+              <a href="mailto:mlsasrm14@gmail.com" style="font-size:12px;color:#1c1c1e;text-decoration:underline;font-weight:500;">
+                mlsasrm14@gmail.com
+              </a>
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center" style="padding:16px 0 8px;">
+              <p style="margin:0;font-size:10px;color:#d4d4d8;letter-spacing:0.3px;">
+                &copy; 2026 Resonate &middot; MSA SRM
               </p>
-
-              <!-- Contact badge -->
-              <table cellpadding="0" cellspacing="0" border="0"
-                style="margin:0 auto;border-radius:20px;
-                background:rgba(0,207,255,0.07);
-                border:1px solid rgba(0,207,255,0.2);
-                padding:8px 20px;">
-                <tr>
-                  <td style="font-size:13px;color:#00cfff;font-family:Arial,Helvetica,sans-serif;
-                    font-weight:600;letter-spacing:0.5px;">
-                    mlsasrm14@gmail.com
-                  </td>
-                </tr>
-              </table>
-
-              <!-- Copyright -->
-              <p style="margin:28px 0 0;font-size:11px;color:#3d3060;
-                font-family:Arial,Helvetica,sans-serif;letter-spacing:0.5px;">
-                © 2026 Resonate Hackathon &nbsp;·&nbsp; All rights reserved.
-              </p>
-
-              <!-- Bottom spark -->
-              <p style="margin:12px 0 0;font-size:16px;color:rgba(180,79,255,0.4);">✦</p>
-
             </td>
           </tr>
 
         </table>
-        <!-- End main container -->
-
       </td>
     </tr>
   </table>
-  <!-- End outer wrapper -->
 
 </body>
 </html>
